@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://b8hxfguo3hict"]
+[gd_scene load_steps=12 format=3 uid="uid://b8hxfguo3hict"]
 
+[ext_resource type="Texture2D" uid="uid://mhx8h733epl2" path="res://RunBall1.png" id="1_lwcwd"]
 [ext_resource type="Texture2D" uid="uid://bacg4l53xilu8" path="res://Throw1.png" id="1_mal7c"]
 [ext_resource type="Texture2D" uid="uid://cnrb8py1aobwe" path="res://Throw2.png" id="2_5pbc7"]
 [ext_resource type="Texture2D" uid="uid://dcdfnbu7d8jw2" path="res://PlayerWithFootball.png" id="2_bahs7"]
 [ext_resource type="Texture2D" uid="uid://dus2i25hayhkv" path="res://Throw3.png" id="3_gvfu0"]
+[ext_resource type="Texture2D" uid="uid://hoydxcroaits" path="res://RunBall2.png" id="3_v8oj0"]
 [ext_resource type="Texture2D" uid="uid://djp1iqcr0yb0k" path="res://Throw4.png" id="4_2uar2"]
 [ext_resource type="Texture2D" uid="uid://ckbsliy7m6ovr" path="res://Player1.png" id="5_yetjf"]
 
@@ -27,20 +29,25 @@ func _process(delta):
 		# Input for movement
 		if Input.is_action_pressed(\"move_right\"):
 			velocity.x += 1
+			$AnimatedSprite2D.scale.x = 1
+			$AnimatedSprite2D.play(\"runwithball\")  # Play the walking animation
 		if Input.is_action_pressed(\"move_left\"):
 			velocity.x -= 1
+			$AnimatedSprite2D.scale.x = -1
+			$AnimatedSprite2D.play(\"runwithball\")  # Play the walking animation
 		if Input.is_action_pressed(\"move_down\"):
 			velocity.y += 1
 		if Input.is_action_pressed(\"move_up\"):
 			velocity.y -= 1
-		
+		#if (velocity.x == 0 and velocity.y == 0):
+			
 		# Handle movement
 		if velocity.length() > 0:
 			velocity = velocity.normalized() * speed
 			if !$AnimatedSprite2D.is_playing():
-				$AnimatedSprite2D.play(\"withfootball\")  # Play the walking animation
+				$AnimatedSprite2D.play(\"runwithball\")  # Play the walking animation
 		else:
-			if $AnimatedSprite2D.animation == \"withfootball\":  # Only stop the walking animation
+			if $AnimatedSprite2D.animation == \"runwithball\":  # Only stop the walking animation
 				$AnimatedSprite2D.stop()  # Stop if no movement
 			
 		# Update player position
@@ -70,6 +77,23 @@ func _wait_for_animation(sprite: AnimatedSprite2D) -> void:
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_oeurq"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_bahs7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_lwcwd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_bahs7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_v8oj0")
+}],
+"loop": true,
+"name": &"runwithball",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("1_mal7c")
@@ -113,7 +137,7 @@ script = SubResource("GDScript_shq4v")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_oeurq")
-animation = &"walk"
+animation = &"runwithball"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-6, 1)
