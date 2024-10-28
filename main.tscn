@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://buqv2pib0psf2"]
+[gd_scene load_steps=17 format=3 uid="uid://buqv2pib0psf2"]
 
 [ext_resource type="Texture2D" uid="uid://clb06s4a72kxl" path="res://field.png" id="1_6kxyb"]
 [ext_resource type="Script" path="res://game.gd" id="1_gxb36"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Endzone.gd" id="7_8l0yx"]
 [ext_resource type="FontFile" uid="uid://bnymqrqwf78xn" path="res://Tiny5-Regular.ttf" id="8_jx58v"]
 [ext_resource type="Script" path="res://GUI.gd" id="8_ypp5j"]
+[ext_resource type="Texture2D" uid="uid://6u7l3brgacsv" path="res://ScoreBar.png" id="10_new0r"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ssx2g"]
 animations = [{
@@ -147,16 +148,23 @@ offset_bottom = 40.0
 theme = SubResource("Theme_meprg")
 script = ExtResource("8_ypp5j")
 
+[node name="Sprite2D" type="Sprite2D" parent="Control"]
+position = Vector2(258, 66)
+texture = ExtResource("10_new0r")
+
 [node name="HomeTeam_Label" type="Label" parent="Control"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 42.0
+offset_top = 53.0
+offset_right = 82.0
+offset_bottom = 80.0
 
 [node name="Clock_Label" type="Label" parent="Control"]
 layout_mode = 0
-offset_left = 152.0
-offset_right = 192.0
-offset_bottom = 23.0
+offset_left = 170.0
+offset_top = 53.0
+offset_right = 210.0
+offset_bottom = 80.0
 
 [node name="Game_Over_Label" type="Label" parent="Control"]
 layout_mode = 0
