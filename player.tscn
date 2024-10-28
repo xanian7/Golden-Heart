@@ -1,0 +1,120 @@
+[gd_scene load_steps=10 format=3 uid="uid://b8hxfguo3hict"]
+
+[ext_resource type="Texture2D" uid="uid://bacg4l53xilu8" path="res://Throw1.png" id="1_mal7c"]
+[ext_resource type="Texture2D" uid="uid://cnrb8py1aobwe" path="res://Throw2.png" id="2_5pbc7"]
+[ext_resource type="Texture2D" uid="uid://dcdfnbu7d8jw2" path="res://PlayerWithFootball.png" id="2_bahs7"]
+[ext_resource type="Texture2D" uid="uid://dus2i25hayhkv" path="res://Throw3.png" id="3_gvfu0"]
+[ext_resource type="Texture2D" uid="uid://djp1iqcr0yb0k" path="res://Throw4.png" id="4_2uar2"]
+[ext_resource type="Texture2D" uid="uid://ckbsliy7m6ovr" path="res://Player1.png" id="5_yetjf"]
+
+[sub_resource type="GDScript" id="GDScript_shq4v"]
+script/source = "extends Area2D
+
+@export var speed = 400 # How fast the player will move (pixels/sec).
+var screen_size # Size of the game window.
+
+@onready var football = $Football 
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	screen_size = get_viewport_rect().size
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if has_node(\"Football\"):
+		var velocity = Vector2.ZERO # The player's movement vector.
+		
+		# Input for movement
+		if Input.is_action_pressed(\"move_right\"):
+			velocity.x += 1
+		if Input.is_action_pressed(\"move_left\"):
+			velocity.x -= 1
+		if Input.is_action_pressed(\"move_down\"):
+			velocity.y += 1
+		if Input.is_action_pressed(\"move_up\"):
+			velocity.y -= 1
+		
+		# Handle movement
+		if velocity.length() > 0:
+			velocity = velocity.normalized() * speed
+			if !$AnimatedSprite2D.is_playing():
+				$AnimatedSprite2D.play(\"withfootball\")  # Play the walking animation
+		else:
+			if $AnimatedSprite2D.animation == \"withfootball\":  # Only stop the walking animation
+				$AnimatedSprite2D.stop()  # Stop if no movement
+			
+		# Update player position
+		position += velocity * delta
+		position = position.clamp(Vector2.ZERO, screen_size)
+		
+		# Handle throwing the football
+		if Input.is_action_just_pressed(\"throw\") and has_football():
+			$AnimatedSprite2D.play(\"throw\")  # Play the throw animation
+			await _wait_for_animation($AnimatedSprite2D)  # Wait for the animation to finish
+			# Throw the football
+			var direction = Vector2.ZERO
+			direction.x += 1
+			football.throw_ball(direction.normalized(), self)
+	else:
+		$AnimatedSprite2D.play(\"walk\")
+	
+# Check if the player has the football
+func has_football() -> bool:
+	return football.get_parent() == self  # Returns true if the football is attached to this player
+
+# Coroutine to wait for the animation to complete
+func _wait_for_animation(sprite: AnimatedSprite2D) -> void:
+	while sprite.frame < sprite.sprite_frames.get_frame_count(sprite.animation) - 1:
+		await get_tree().process_frame
+"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oeurq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_mal7c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_5pbc7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_gvfu0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_2uar2")
+}],
+"loop": false,
+"name": &"throw",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_yetjf")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_bahs7")
+}],
+"loop": true,
+"name": &"withfootball",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_coh20"]
+radius = 29.0
+height = 132.0
+
+[node name="Player" type="Area2D"]
+script = SubResource("GDScript_shq4v")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_oeurq")
+animation = &"walk"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-6, 1)
+shape = SubResource("CapsuleShape2D_coh20")
